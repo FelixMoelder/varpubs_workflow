@@ -1,0 +1,6 @@
+varpubs:
+  activate: true
+  cache: "varpubs_cache.duckdb"
+  llm_url: http://localhost:11434/v1
+  model: mistral:latest
+  api_key: ""

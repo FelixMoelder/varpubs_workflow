@@ -1,0 +1,131 @@
+__use_yte__: true
+
+name: ?f"Fusion calls {wildcards.event}"
+
+default-view: ?f"{params.groups[0]}-fusions"
+
+__definitions__:
+  - import os
+  - |
+    def read_file(path):
+        return open(path, 'r').read()
+
+datasets:
+  ?for group, path in zip(params.groups, input.fusion_calls):
+    ?f"{group}-fusions":
+      path: ?path
+      separator: "\t"
+
+views:
+  ?for group in params.groups:
+    ?f"{group}-fusions":
+          desc: ?f"Fusion calls"
+          dataset: ?f"{group}-fusions"
+          render-table:
+            columns:
+              location_breakpoint_1:
+                link-to-url:
+                  ensembl:
+                    url: ?f"https://www.ensembl.org/{params.species}/Location/Overview?r={{value}}"
+                    new-window: true
+              ensembl_gene_id_breakpoint_1:
+                display-mode: detail
+                link-to-url:
+                  ensembl:
+                    url: ?f"https://www.ensembl.org/{params.species}/Gene/Summary?g={{value}}"
+                    new-window: true
+              ensembl_transcript_id_breakpoint_1:
+                display-mode: detail
+                link-to-url:
+                  ensembl:
+                    url: ?f"https://www.ensembl.org/{params.species}/Transcript/Summary?t={{value}}"
+                    new-window: true
+              gene_symbol_breakpoint_1:
+                link-to-url:
+                  gene_card:
+                    url: "https://www.genecards.org/cgi-bin/carddisp.pl?gene={value}"
+                    new-window: true
+              exon_breakpoint_1:
+                display-mode: detail
+              site_type_breakpoint_1:
+                plot:
+                  heatmap:
+                    type: nominal
+                    color-scheme: set1
+                    aux-domain-columns:
+                      - site_type_breakpoint_2
+              location_breakpoint_2:
+                link-to-url:
+                  ensembl:
+                    url: ?f"https://www.ensembl.org/{params.species}/Location/Overview?r={{value}}"
+                    new-window: true
+              ensembl_gene_id_breakpoint_2:
+                display-mode: detail
+                link-to-url:
+                  ensembl:
+                    url: ?f"https://www.ensembl.org/{params.species}/Gene/Summary?g={{value}}"
+                    new-window: true
+              ensembl_transcript_id_breakpoint_2:
+                display-mode: detail
+                link-to-url:
+                  ensembl:
+                    url: ?f"https://www.ensembl.org/{params.species}/Transcript/Summary?t={{value}}"
+                    new-window: true
+              gene_symbol_breakpoint_2:
+                link-to-url:
+                  gene_card:
+                    url: "https://www.genecards.org/cgi-bin/carddisp.pl?gene={value}"
+                    new-window: true
+              exon_breakpoint_2:
+                display-mode: detail
+              site_type_breakpoint_2:
+                plot:
+                  heatmap:
+                    type: nominal
+                    color-scheme: set1
+                    aux-domain-columns:
+                      - site_type_breakpoint_1
+              fusion_type:
+                plot:
+                  heatmap:
+                    type: nominal
+                    color-scheme: category10
+              resulting_reading_frame:
+                plot:
+                  heatmap:
+                    type: nominal
+                    color-scheme: dark2
+              "regex('.+: allele frequency')":
+                plot: 
+                  ticks:
+                    scale: "linear"
+                    domain: [0.0, 1.0]
+                    aux-domain-columns:
+                      - "regex('.+: allele frequency')"
+              "regex('.+: read depth')":
+                plot: 
+                  ticks:
+                    scale: "linear"
+                    aux-domain-columns:
+                      - "regex('.+: read depth')"
+              "regex('prob: .+')":
+                plot:
+                  heatmap:
+                    scale: linear
+                    domain: [0.0, 1.0]
+                    range:
+                      - white
+                      - "#1f77b4"
+              ?for alias in params.samples.loc[params.samples["group"] == group, "alias"]:
+                '?f"{alias}: short observations"':
+                  optional: true
+                  custom-plot:
+                    data: ?read_file(input.data_short_observations)
+                    spec: ?read_file(input.spec_short_observations)
+                  display-mode: detail
+                '?f"{alias}: observations"':
+                  optional: true
+                  custom-plot:
+                    data: ?read_file(input.data_observations)
+                    spec-path: ?input.spec_observations
+                  display-mode: detail
