@@ -1,2 +1,2 @@
-# varpubs_workflow
-I minimal workflow to summarize variant publications via varpubs
+# Varpubs workflow
+A minimal workflow to summarize variant publications via varpubs
