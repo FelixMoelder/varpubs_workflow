@@ -1,6 +1,8 @@
 varpubs:
   activate: true
+  # optional: will be created if not exists
   cache: "varpubs_cache.duckdb"
+  # default url for ollama
   llm_url: http://localhost:11434/v1
   model: mistral:latest
   api_key: ""
